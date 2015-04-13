@@ -1,0 +1,60 @@
+sudo apt-get ros-hidro
+
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
+
+wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
+
+ sudo apt-get update
+
+
+ sudo apt-get install ros-hydro-desktop-full
+
+ sudo apt-get update
+
+
+~$ sudo rosdep init
+
+rosdep update
+
+
+sudo apt-get install ros-hydro-desktop
+
+sudo apt-get install python-rosinstall
+
+
+sudo apt-get install ros-hydro-turtlebot-simulator
+
+
+ sudo apt-get install ros-hydro-rviz
+
+rosdep install rviz
+
+rosmake rviz
+
+sudo apt-get install ros-hydro-teleop-twist-keyboard
+
+sudo nano ~/.bashrc
+Posar els exports
+
+sudo apt-get install ros-hydro-turtlebot-apps
+
+rviz_config.rviz
+
+Des del home
+mkdir catkin_ws
+ cd catkin_ws/
+mkdir src
+cd src/
+catkin_init_workspace 
+ cd ..
+ catkin_make
+chmod +x driver.py
+
+
+
+
+
+
+
+
+

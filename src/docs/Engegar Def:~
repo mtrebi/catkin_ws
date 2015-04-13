@@ -1,0 +1,10 @@
+Per engegar:
+
+roslaunch turtlebot_gazebo turtlebot_empty_world.launch 
+    Posar el willow garage
+
+roslaunch turtlebot_teleop keyboard_teleop.launch
+
+roslaunch turtlebot_rviz_launchers view_robot.launch
+
+roslaunch lab1_turtlebot driver.launch sim:=true x:=10 y:=20 theta:=30
