@@ -1,7 +1,0 @@
-set(_CATKIN_CURRENT_PACKAGE "lab1_turtlebot")
-set(lab1_turtlebot_MAINTAINER "Albert Palomer <apalomer@eia.udg.edu>")
-set(lab1_turtlebot_DEPRECATED "")
-set(lab1_turtlebot_VERSION "1.0.0")
-set(lab1_turtlebot_BUILD_DEPENDS "geometry_msgs" "nav_msgs" "rospy")
-set(lab1_turtlebot_RUN_DEPENDS "geometry_msgs" "nav_msgs" "rospy")
-set(lab1_turtlebot_BUILDTOOL_DEPENDS "catkin")

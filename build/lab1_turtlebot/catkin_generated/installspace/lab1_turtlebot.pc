@@ -1,8 +1,0 @@
-prefix=/home/jbosch/catkin_ws/install
-
-Name: lab1_turtlebot
-Description: Description of lab1_turtlebot
-Version: 1.0.0
-Cflags: 
-Libs: -L/home/jbosch/catkin_ws/install/lib 
-Requires: 
