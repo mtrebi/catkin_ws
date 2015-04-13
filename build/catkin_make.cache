@@ -1,0 +1,2 @@
+lab1_turtlebot
+-DCATKIN_DEVEL_PREFIX=/home/jbosch/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/jbosch/catkin_ws/install
