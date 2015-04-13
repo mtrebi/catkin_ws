@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # TODO is it necessary here?
-import roslib; roslib.load_manifest('lab1_turtlebot')
+import roslib; roslib.load_manifest('practica_turtlebot')
 import rospy
 
 from driver import driver

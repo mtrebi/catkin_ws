@@ -2,7 +2,7 @@
 
 
 # Every python controller needs these lines
-import roslib; roslib.load_manifest('lab1_turtlebot')
+import roslib; roslib.load_manifest('practica_turtlebot')
 import rospy
 
 # The velocity command message
@@ -16,7 +16,7 @@ from math import tanh
 import math
 
 class driver:
-    def __init__(self, distance, max_speed=0.1, min_speed=0.01):
+    def __init__(self, distance, max_speed=0.2, min_speed=0.01):
         # How close should we get to things, and what's our maximum speed?
         self.distance = distance
         self.max_speed = max_speed

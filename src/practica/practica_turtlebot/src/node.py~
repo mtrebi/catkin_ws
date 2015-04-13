@@ -15,7 +15,6 @@ if __name__ == '__main__':
 
         # Set up the controller
         stopper = driver(distance)
-        stopper.drive();
 
         # Hand control over to ROS
         rospy.spin() 
