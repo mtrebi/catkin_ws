@@ -17,6 +17,6 @@
   <param name="theta" value="$(arg theta)"/>
 
   <!-- Turtlebot Driver node -->
-  <node pkg="practica_turtlebot" type="node.py" name="driver" output="screen"/>
+  <node pkg="practica_turtlebot_mariano" type="node.py" name="driver" output="screen"/>
 
 </launch>
