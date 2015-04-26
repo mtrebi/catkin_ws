@@ -20,7 +20,7 @@ if __name__ == '__main__':
         driver = Driver(start_position, end_position)
 
         # Tell him what to do
-        driver.go_forward_avoid_obstacles()
+        driver.go_forward()
 
 
         # Hand control over to ROS
