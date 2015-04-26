@@ -42,7 +42,7 @@ class Driver:
       # What function to call when you ctrl + c    
       rospy.on_shutdown(self.shutdown)
 
-    def bug_0(self, turn_orientation):
+    def bug_0(self, turn_orientation = 'Left', accepted_error = 1):
       rospy.loginfo('Starting bug_0 algorithm')
       rospy.loginfo('Turning orientation is ' + turn_orientation)
       rospy.loginfo('Rate is ' + self.rate)
@@ -57,24 +57,30 @@ class Driver:
         else:
           avoid_obstacle(turn_orientation)
           go_forward()
-        goal_reached = is_goal(current_position, end_position, accepted_error)
+        goal_reached = is_goal(accepted_error)
         r.sleep()
       rospy.loginfo('Congratulations!!! Goal reached')
 
     # Turn the robot facing the goal
-    def head_toward_goal():
+    def head_toward_goal(self):
 
     # Return true if there is a obstacle in the forward direction. False otherwise.
-    def is_obstacle():
+    def is_obstacle(self):
 
     # Move the robot in the forward direction
-    def go_forward():
+    def go_forward(self, speed = 0.2):
+      twist_forward = Twist()
+      # let's go forward at 0.2 m/s
+      twist_forward.linear.x = speed
+      # publish the velocity
+      self.cmd_vel.publish(twist_forward)
 
     # Turn the robot with turn_orientation until he stops facing a obstacle 
-    def avoid_obstacle(turn_orientation):
+    def avoid_obstacle(self, turn_orientation):
 
     # Return true if the robot has reached the goal with the given accepted error. False otherwise.
-    def is_goal(turn_orientation, end_position, accepted_error):
+    def is_goal(self, accepted_error):
+      # Math.hypot(current position, end position)
 
     # def go_forward(self, speed = 0.2, rotation = 0):
     #   r = rospy.Rate(self.rate);
