@@ -15,8 +15,8 @@ if __name__ == '__main__':
     driver = Driver()
 
     # Tell him what to do
-    driver.stop_on_obstacle()
-    # driver.turn_on_obstacle()
+    # driver.stop_on_obstacle()
+    driver.turn_on_obstacle()
     # driver.bug_0()
 
     # Hand control over to ROS

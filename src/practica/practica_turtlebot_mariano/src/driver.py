@@ -36,9 +36,10 @@ class Driver:
       self.cmd_vel = rospy.Publisher("/mobile_base/commands/velocity", Twist)
 
       # Let the world know we're ready
-      # rospy.loginfo('Driver initialized')
-      # rospy.loginfo('Start position: '+ str(self.current_position))
-      # rospy.loginfo('End position: '+ str(self.end_position))
+      rospy.loginfo('Driver initialized')
+      rospy.loginfo('Start: '+ str(self.current_pose))
+      rospy.loginfo('End: '+ str(self.end_pose))
+
       # What function to call when you ctrl + c    
       rospy.on_shutdown(self.shutdown)
 
@@ -94,13 +95,14 @@ class Driver:
       rospy.loginfo('Laser data, Distance: {0}'.format(closest))
 
     def odometry_callback(self, odom):
+      a = 1
       # rospy.loginfo('Odometry data: {0}'.format(odom))
       # Read odometry params
-      rospy.loginfo('Odometry data:')
-      rospy.loginfo('Current position: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.position.x, odom.pose.pose.position.y, odom.pose.pose.position.z)) 
-      rospy.loginfo('Current orientation: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.orientation.x, odom.pose.pose.orientation.y, odom.pose.pose.orientation.z)) 
-      rospy.loginfo('Current linear speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.linear.x, odom.twist.twist.linear.y, odom.twist.twist.linear.z)) 
-      rospy.loginfo('Current angular speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.angular.x, odom.twist.twist.angular.y, odom.twist.twist.angular.z)) 
+      # rospy.loginfo('Odometry data:')
+      # rospy.loginfo('Current position: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.position.x, odom.pose.pose.position.y, odom.pose.pose.position.z)) 
+      # rospy.loginfo('Current orientation: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.orientation.x, odom.pose.pose.orientation.y, odom.pose.pose.orientation.z)) 
+      # rospy.loginfo('Current linear speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.linear.x, odom.twist.twist.linear.y, odom.twist.twist.linear.z)) 
+      # rospy.loginfo('Current angular speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.angular.x, odom.twist.twist.angular.y, odom.twist.twist.angular.z)) 
       # Update and correct current position, orientation and speed
 
     # Move the robot in the forward direction
@@ -129,10 +131,11 @@ class Driver:
     # Return true if the robot has reached the goal with the given accepted error. False otherwise.
     def is_goal(self, accepted_error = 0.1):
       distance = math.hypot(self.end_pose.position.x - self.current_pose.position.x, self.end_pose.position.y - self.current_pose.position.y)
+      rospy.loginfo('Distance to goal: {0}'.format(distance))
       return (distance < accepted_error)
 
     def stop(self):
-      rospy.loginfo('Stopping')
+      rospy.loginfo('Stopping TurtleBot')
       twist_stop = Twist()
       self.cmd_vel.publish(twist_stop)
 
