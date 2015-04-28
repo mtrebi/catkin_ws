@@ -20,9 +20,10 @@ if __name__ == '__main__':
     driver = Driver(start_position, end_position)
 
     # Tell him what to do
-    # driver.bug_0()
     # driver.stop_on_obstacle()
     driver.turn_on_obstacle()
+    # driver.bug_0()
+
     # Hand control over to ROS
     # This function will only exit when the user press Ctrl + C
     # Does not do anything. Only handles here the program     

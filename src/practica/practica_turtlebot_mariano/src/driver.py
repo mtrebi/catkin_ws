@@ -45,27 +45,24 @@ class Driver:
       # What function to call when you ctrl + c    
       rospy.on_shutdown(self.shutdown)
 
-    # def bug_0(self, turn_orientation = 'Left', accepted_error = 1):
-    #   rospy.loginfo('Starting bug_0 algorithm')
-    #   rospy.loginfo('Turning orientation is ' + turn_orientation)
-    #   rospy.loginfo('Rate is ' + self.rate)
+    def bug_0(self, turn_orientation = 'Left', accepted_error = 1):
+      rospy.loginfo('Starting bug_0 algorithm')
+      r = rospy.Rate(self.rate)
 
-    #   r = rospy.Rate(self.rate)
-
-    #   goal_reached = false
-    #   while not goal_reached:
-    #     head_toward_goal()
-    #     if not is_obstacle():
-    #       go_forward()
-    #     else:
-    #       avoid_obstacle(turn_orientation)
-    #       go_forward()
-    #     goal_reached = is_goal(accepted_error)
-    #     r.sleep()
-    #   rospy.loginfo('Congratulations!!! Goal reached')
+      while not self.is_goal():
+        self.head_toward_goal()
+        if not self.is_obstacle():
+          self.go_forward()
+        else:
+          self.turn()
+          self.go_forward()
+        r.sleep()
+      rospy.loginfo('Congratulations!!! Goal reached')
+      rospy.loginfo('Stopping bug_0 algorithm')
 
     # Turn the robot facing the goal
-    #def head_toward_goal(self):
+    def head_toward_goal(self):
+      a = 1
 
     def turn_on_obstacle(self):
       rospy.loginfo('Starting turn_on_obstacle')
@@ -94,13 +91,14 @@ class Driver:
         rospy.loginfo('Obstacle found!!!')
       return self.obstacle
 
+    # Laser returns NaN if objects is too far or too near. We must take care!
     def laser_callback(self, scan):
       closest = min(scan.ranges)
       self.obstacle = self.obstacle_threshold >= closest or (math.isnan(closest) and self.obstacle)
       rospy.loginfo('Laser data, Distance: {0}'.format(closest))
 
     # Move the robot in the forward direction
-    def go_forward(self, speed = 0.3):
+    def go_forward(self, speed = 0.5):
       rospy.loginfo('Moving forward, Speed: {0}'.format(speed))
       twist_forward = Twist()
       # let's go forward at 0.5 m/s
@@ -108,7 +106,8 @@ class Driver:
       # publish the command
       self.cmd_vel.publish(twist_forward)
 
-    def turn(self, turn_speed = 0.1):
+    # If turn_speed is to high we may detect a NaN as a near obstacle when there is a far distance
+    def turn(self, turn_speed = 0.2):
       rospy.loginfo('Turning robot, Speed: {0}'.format(turn_speed))
       twist_turn = Twist()
       # let's go forward at 0.2 m/s
@@ -129,7 +128,6 @@ class Driver:
     def stop(self):
       rospy.loginfo('Stopping')
       twist_stop = Twist()
-      # publish the command
       self.cmd_vel.publish(twist_stop)
 
     def shutdown(self):
