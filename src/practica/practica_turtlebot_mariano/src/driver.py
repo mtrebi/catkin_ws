@@ -28,7 +28,7 @@ class Driver:
       self.end_position = end_position
       self.rate = rate
       self.obstacle = False
-      self.obstacle_threshold = 0.5
+      self.obstacle_threshold = 1
 
       # Subscriber for the encoder data
       # When data of type LaserScal arrives from topic 'scan' call laser_callback function immediately
@@ -67,7 +67,17 @@ class Driver:
     # Turn the robot facing the goal
     #def head_toward_goal(self):
 
-    #def turn_on_obstacle(self):
+    def turn_on_obstacle(self):
+      rospy.loginfo('Starting turn_on_obstacle')
+      r = rospy.Rate(self.rate)
+      while not self.is_goal():
+        if not self.is_obstacle():
+          self.go_forward()
+        else:
+          self.turn()
+        r.sleep()
+      rospy.loginfo('Stopping turn_on_obstacle')
+      self.stop()
 
     def stop_on_obstacle(self):
       rospy.loginfo('Starting stop_on_obstacle')
@@ -87,32 +97,34 @@ class Driver:
     def laser_callback(self, scan):
       closest = min(scan.ranges)
       self.obstacle = self.obstacle_threshold >= closest or (math.isnan(closest) and self.obstacle)
-      rospy.loginfo('Reading data from scanner, Distance: {0}'.format(closest))
+      rospy.loginfo('Laser data, Distance: {0}'.format(closest))
 
     # Move the robot in the forward direction
-    def go_forward(self, speed = 0.5):
-      rospy.loginfo('Moving forward at  Speed : {0}'.format(speed))
+    def go_forward(self, speed = 0.3):
+      rospy.loginfo('Moving forward, Speed: {0}'.format(speed))
       twist_forward = Twist()
       # let's go forward at 0.5 m/s
       twist_forward.linear.x = speed
       # publish the command
       self.cmd_vel.publish(twist_forward)
 
-    # def turn(self, turn_speed = 0.1):
-    #   twist_turn = Twist()
-    #   # let's go forward at 0.2 m/s
-    #   twist_turn.angular.z = turn_speed
-    #   # publish the command
-    #   self.cmd_vel.publish(twist_forward)
+    def turn(self, turn_speed = 0.1):
+      rospy.loginfo('Turning robot, Speed: {0}'.format(turn_speed))
+      twist_turn = Twist()
+      # let's go forward at 0.2 m/s
+      twist_turn.angular.z = turn_speed
+      # publish the command
+      self.cmd_vel.publish(twist_turn)
 
     # Turn the robot with turn_orientation until he stops facing a obstacle 
-    # def avoid_obstacle(self, turn_orientation, turn_rate = 0.1):
-    #   while not is_obstacle():
-    #     turn(turn_orientation, turn_rate)
+    def avoid_obstacle(self, turn_orientation, turn_rate = 0.1):
+      while self.is_obstacle():
+        self.turn()
 
     # Return true if the robot has reached the goal with the given accepted error. False otherwise.
-    # def is_goal(self, accepted_error):
-    #   # Math.hypot(current position, end position)
+    def is_goal(self, accepted_error = 0.1):
+      # Math.hypot(current position, end position)
+      return False
 
     def stop(self):
       rospy.loginfo('Stopping')
