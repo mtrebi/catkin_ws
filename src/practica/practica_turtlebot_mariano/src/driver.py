@@ -11,6 +11,9 @@ from geometry_msgs.msg import Twist
 # The laser scan message
 from sensor_msgs.msg import LaserScan
 
+# The odometry message
+from nav_msgs.msg import Odometry
+
 # We use a hyperbolic tangent as a transfer function
 from math import tanh
 import math
@@ -32,7 +35,8 @@ class Driver:
 
       # Subscriber for the encoder data
       # When data of type LaserScal arrives from topic 'scan' call laser_callback function immediately
-      self.sub = rospy.Subscriber('scan', LaserScan, self.laser_callback) # self.sub.unregister()
+      self.sub_scan = rospy.Subscriber('scan', LaserScan, self.laser_callback) # self.sub.unregister()
+      self.sub_odom = rospy.Subscriber('odom', Odometry, self.odometry_callback) # self.sub.unregister()
 
       # Publisher for movement commands
       # We publish data of type Twist in velocity topic
@@ -96,6 +100,10 @@ class Driver:
       closest = min(scan.ranges)
       self.obstacle = self.obstacle_threshold >= closest or (math.isnan(closest) and self.obstacle)
       rospy.loginfo('Laser data, Distance: {0}'.format(closest))
+
+    
+    def odometry_callback(self, odom):
+      rospy.loginfo('Odometry data: {0}'.format(odom))
 
     # Move the robot in the forward direction
     def go_forward(self, speed = 0.5):
