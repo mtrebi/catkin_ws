@@ -5,19 +5,14 @@ import roslib; roslib.load_manifest('practica_turtlebot')
 import rospy
 
 from driver import Driver
-from driver import Point
 
 if __name__ == '__main__':
   try:
     # Starts a unique node with name driver
     rospy.init_node('driver')
 
-    # Get current position
-    start_position = Point(0,0,0)
-    end_position = Point(0,0,0)
-
     # Create driver
-    driver = Driver(start_position, end_position)
+    driver = Driver()
 
     # Tell him what to do
     driver.stop_on_obstacle()

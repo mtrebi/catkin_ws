@@ -6,7 +6,7 @@ import roslib; roslib.load_manifest('practica_turtlebot')
 import rospy
 
 # The velocity command message
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Vector3, Twist, Quaternion, Pose
 
 # The laser scan message
 from sensor_msgs.msg import LaserScan
@@ -18,17 +18,10 @@ from nav_msgs.msg import Odometry
 from math import tanh
 import math
 
-class Point:
-    def __init__(self, x, y, z):
-      self.x = x
-      self.y = y
-      self.z = z
-
 class Driver:
-    def __init__(self, start_position, end_position, rate=10):
-      self.start_position = start_position
-      self.current_position = start_position
-      self.end_position = end_position
+    def __init__(self, rate=10):
+      self.current_pose = Pose()
+      self.end_pose = Pose()
       self.rate = rate
       self.obstacle = False
       self.obstacle_threshold = 1
@@ -52,14 +45,13 @@ class Driver:
     def bug_0(self, turn_orientation = 'Left', accepted_error = 1):
       rospy.loginfo('Starting bug_0 algorithm')
       r = rospy.Rate(self.rate)
-
+      # TODO ARREGLAR!!! 
       while not self.is_goal():
         self.head_toward_goal()
         if not self.is_obstacle():
           self.go_forward()
         else:
           self.turn()
-          self.go_forward()
         r.sleep()
       rospy.loginfo('Congratulations!!! Goal reached')
       rospy.loginfo('Stopping bug_0 algorithm')
@@ -103,11 +95,13 @@ class Driver:
 
     def odometry_callback(self, odom):
       # rospy.loginfo('Odometry data: {0}'.format(odom))
+      # Read odometry params
       rospy.loginfo('Odometry data:')
       rospy.loginfo('Current position: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.position.x, odom.pose.pose.position.y, odom.pose.pose.position.z)) 
       rospy.loginfo('Current orientation: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.orientation.x, odom.pose.pose.orientation.y, odom.pose.pose.orientation.z)) 
       rospy.loginfo('Current linear speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.linear.x, odom.twist.twist.linear.y, odom.twist.twist.linear.z)) 
       rospy.loginfo('Current angular speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.angular.x, odom.twist.twist.angular.y, odom.twist.twist.angular.z)) 
+      # Update and correct current position, orientation and speed
 
     # Move the robot in the forward direction
     def go_forward(self, speed = 0.5):
@@ -134,8 +128,8 @@ class Driver:
 
     # Return true if the robot has reached the goal with the given accepted error. False otherwise.
     def is_goal(self, accepted_error = 0.1):
-      # Math.hypot(current position, end position)
-      return False
+      distance = math.hypot(self.end_pose.position.x - self.current_pose.position.x, self.end_pose.position.y - self.current_pose.position.y)
+      return (distance < accepted_error)
 
     def stop(self):
       rospy.loginfo('Stopping')
