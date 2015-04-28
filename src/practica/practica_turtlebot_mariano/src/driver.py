@@ -35,8 +35,8 @@ class Driver:
 
       # Subscriber for the encoder data
       # When data of type LaserScal arrives from topic 'scan' call laser_callback function immediately
-      self.sub_scan = rospy.Subscriber('scan', LaserScan, self.laser_callback) # self.sub.unregister()
-      self.sub_odom = rospy.Subscriber('odom', Odometry, self.odometry_callback) # self.sub.unregister()
+      self.sub_scan = rospy.Subscriber('scan', LaserScan, self.laser_callback) # self.sub_scan.unregister()
+      self.sub_odom = rospy.Subscriber('odom', Odometry, self.odometry_callback) # self.sub_odom.unregister()
 
       # Publisher for movement commands
       # We publish data of type Twist in velocity topic
@@ -101,9 +101,13 @@ class Driver:
       self.obstacle = self.obstacle_threshold >= closest or (math.isnan(closest) and self.obstacle)
       rospy.loginfo('Laser data, Distance: {0}'.format(closest))
 
-    
     def odometry_callback(self, odom):
-      rospy.loginfo('Odometry data: {0}'.format(odom))
+      # rospy.loginfo('Odometry data: {0}'.format(odom))
+      rospy.loginfo('Odometry data:')
+      rospy.loginfo('Current position: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.position.x, odom.pose.pose.position.y, odom.pose.pose.position.z)) 
+      rospy.loginfo('Current orientation: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.orientation.x, odom.pose.pose.orientation.y, odom.pose.pose.orientation.z)) 
+      rospy.loginfo('Current linear speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.linear.x, odom.twist.twist.linear.y, odom.twist.twist.linear.z)) 
+      rospy.loginfo('Current angular speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.angular.x, odom.twist.twist.angular.y, odom.twist.twist.angular.z)) 
 
     # Move the robot in the forward direction
     def go_forward(self, speed = 0.5):
