@@ -4,6 +4,7 @@
 # Every python controller needs these lines
 import roslib; roslib.load_manifest('practica_turtlebot')
 import rospy
+import time
 
 # The velocity command message
 from geometry_msgs.msg import Vector3, Twist, Quaternion, Pose
@@ -19,10 +20,8 @@ from math import tanh
 import math
 
 class Driver:
-    def __init__(self, start_pose, end_pose, rate=10):
-      ## TODO CORRECCION POSICION INICIAL
-      self.start_pose = start_pose
-      self.current_pose = start_pose
+    def __init__(self, end_pose, rate=10):
+      self.current_pose = Pose()
       self.end_pose = end_pose
       self.rate = rate
       self.obstacle = False
@@ -39,12 +38,11 @@ class Driver:
 
       # Let the world know we're ready
       rospy.loginfo('Driver initialized')
-      rospy.loginfo('Start '+ str(self.start_pose))
-      rospy.loginfo('Current '+ str(self.current_pose))
-      rospy.loginfo('End '+ str(self.end_pose))
 
       # What function to call when you ctrl + c    
       rospy.on_shutdown(self.shutdown)
+
+      time.sleep(1)
 
     def bug_0(self, turn_orientation = 'Left', accepted_error = 1):
       rospy.loginfo('Starting bug_0 algorithm')
@@ -127,7 +125,7 @@ class Driver:
       self.cmd_vel.publish(twist_turn)
 
     # Return true if the robot has reached the goal with the given accepted error. False otherwise.
-    def is_goal(self, accepted_error = 0.1):
+    def is_goal(self, accepted_error = 0.5):
       distance = math.hypot(self.end_pose.position.x - self.current_pose.position.x, self.end_pose.position.y - self.current_pose.position.y)
       rospy.loginfo('Distance to goal: {0}'.format(distance))
       return (distance < accepted_error)
@@ -136,10 +134,12 @@ class Driver:
       deltaX = self.end_pose.position.x - self.current_pose.position.x
       deltaY = self.end_pose.position.y - self.current_pose.position.y
 
+      # TODO revisar angulos negativos --> Valores absolutos
+      # Ahora lo hace todo bien pero a veces da mas vueltas de las necesarias.
       desired_angle_radians = math.atan2(deltaY, deltaX)
       current_angle_radians = self.current_pose.orientation.z * math.pi
 
-      distance_radians = (desired_angle_radians - current_angle_radians)
+      distance_radians = (desired_angle_radians) - (current_angle_radians)
       rospy.loginfo('Desired = {0}, current = {1}, distance = {2}'.format(desired_angle_radians, current_angle_radians, distance_radians))
 
       return math.fabs(distance_radians) < accepted_error

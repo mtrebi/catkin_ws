@@ -12,26 +12,22 @@ if __name__ == '__main__':
     # Starts a unique node with name driver
     rospy.init_node('driver')
 
-    # Create start_pose
-    start_pose = Pose()
-    start_pose.position.x = 0
-    start_pose.position.y = 0
-
     # Create end_pose
     end_pose = Pose()
-    end_pose.position.x = 0
-    end_pose.position.y = 5
+    end_pose.position.x = -10
+    end_pose.position.y = -10
 
     # Create driver
-    driver = Driver(start_pose, end_pose)
+    driver = Driver(end_pose)
 
     # Tell him what to do
-    driver.stop_on_obstacle()
+    # driver.stop_on_obstacle()
     # driver.turn_on_obstacle()
     # driver.bug_0()
-    # driver.head_toward_goal()
+    driver.head_toward_goal()
     # Hand control over to ROS
     # This function will only exit when the user press Ctrl + C
     # Does not do anything. Only handles here the program     
+    # rospy.spin()
   except rospy.ROSInterruptException:
     pass
