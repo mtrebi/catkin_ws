@@ -19,17 +19,17 @@ if __name__ == '__main__':
 
     # Create end_pose
     end_pose = Pose()
-    end_pose.position.x = 1
-    end_pose.position.y = 0
+    end_pose.position.x = 0
+    end_pose.position.y = 5
 
     # Create driver
     driver = Driver(start_pose, end_pose)
 
     # Tell him what to do
-    # driver.stop_on_obstacle()
+    driver.stop_on_obstacle()
     # driver.turn_on_obstacle()
     # driver.bug_0()
-    driver.head_toward_goal()
+    # driver.head_toward_goal()
     # Hand control over to ROS
     # This function will only exit when the user press Ctrl + C
     # Does not do anything. Only handles here the program     
