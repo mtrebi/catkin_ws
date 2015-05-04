@@ -20,7 +20,7 @@ from math import tanh
 import math
 
 class Driver:
-    def __init__(self, end_pose, rate=10):
+    def __init__(self, end_pose, rate= 50):
       self.current_pose = Pose()
       self.end_pose = end_pose
       self.rate = rate
@@ -55,7 +55,6 @@ class Driver:
         else:
           self.turn()
         r.sleep()
-      rospy.loginfo('Congratulations!!! Goal reached')
       rospy.loginfo('Stopping bug_0 algorithm')
 
     # Turn the robot facing the goal
@@ -75,13 +74,14 @@ class Driver:
       rospy.loginfo('Stopping turn_on_obstacle')
       self.stop()
 
-    def stop_on_obstacle(self):
-      rospy.loginfo('Starting stop_on_obstacle')
+    def go_no_obstacle(self):
+      rospy.loginfo('Starting go_no_obstacle')
       r = rospy.Rate(self.rate)
-      while not self.is_obstacle():
+      while not self.is_goal():
+        self.head_toward_goal()
         self.go_forward()
         r.sleep()
-      rospy.loginfo('Stopping stop_on_obstacle')
+      rospy.loginfo('Stopping go_no_obstacle')
       self.stop()
 
     # Return true if there is a obstacle in the forward direction. False otherwise.
@@ -100,15 +100,14 @@ class Driver:
       # rospy.loginfo('Odometry data: {0}'.format(odom))
       # Read odometry params
       # rospy.loginfo('Odometry data:')
-      rospy.loginfo('Current position: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.position.x, odom.pose.pose.position.y, odom.pose.pose.position.z)) 
+      # rospy.loginfo('Current position: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.position.x, odom.pose.pose.position.y, odom.pose.pose.position.z)) 
       # rospy.loginfo('Current orientation: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.orientation.x, odom.pose.pose.orientation.y, odom.pose.pose.orientation.z)) 
       # rospy.loginfo('Current linear speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.linear.x, odom.twist.twist.linear.y, odom.twist.twist.linear.z)) 
       # rospy.loginfo('Current angular speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.angular.x, odom.twist.twist.angular.y, odom.twist.twist.angular.z)) 
-      # Update and correct current position, orientation and speed
 
     # Move the robot in the forward direction
-    def go_forward(self, speed = 0.5):
-      rospy.loginfo('Moving forward, Speed: {0}'.format(speed))
+    def go_forward(self, speed = 5):
+      # rospy.loginfo('Moving forward, Speed: {0}'.format(speed))
       twist_forward = Twist()
       # let's go forward at 0.5 m/s
       twist_forward.linear.x = speed
@@ -116,8 +115,8 @@ class Driver:
       self.cmd_vel.publish(twist_forward)
 
     # If turn_speed is to high we may detect a NaN as a near obstacle when there is a far distance
-    def turn(self, turn_speed = 0.2):
-      rospy.loginfo('Turning robot, Speed: {0}'.format(turn_speed))
+    def turn(self, turn_speed = 0.1):
+      # rospy.loginfo('Turning robot, Speed: {0}'.format(turn_speed))
       twist_turn = Twist()
       # let's go forward at 0.2 m/s
       twist_turn.angular.z = turn_speed
@@ -130,7 +129,7 @@ class Driver:
       rospy.loginfo('Distance to goal: {0}'.format(distance))
       return (distance < accepted_error)
 
-    def is_facing_goal(self, accepted_error = 0.01):
+    def is_facing_goal(self, accepted_error = 0.005):
       deltaX = self.end_pose.position.x - self.current_pose.position.x
       deltaY = self.end_pose.position.y - self.current_pose.position.y
 
@@ -140,7 +139,8 @@ class Driver:
       current_angle_radians = self.current_pose.orientation.z * math.pi
 
       distance_radians = (desired_angle_radians) - (current_angle_radians)
-      rospy.loginfo('Desired = {0}, current = {1}, distance = {2}'.format(desired_angle_radians, current_angle_radians, distance_radians))
+      # rospy.loginfo('Desired = {0}, current = {1}, distance = {2}'.format(desired_angle_radians, current_angle_radians, distance_radians))
+      rospy.loginfo('Distance to angle = {0}'.format(distance_radians))
 
       return math.fabs(distance_radians) < accepted_error
 
