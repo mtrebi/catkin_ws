@@ -59,15 +59,18 @@ class Driver:
 
     # Turn the robot facing the goal
     def head_toward_goal(self):
-      r = rospy.Rate(self.rate)
-      for x in range(0,10): # 10 => 90 degrees
-        self.turn()
-        r.sleep() # Sleep for 1/R --> 1/5 --> T = 0.2  --> 10 * 0.2 = 2 secs 
-        # 2 secs * turn_speed = result --> 2secs * 45 = 90
+      self.turn_degrees(180)
+      # r = rospy.Rate(self.rate)
+      # for x in range(0,10): # 10 => 90 degrees
+      #   self.turn()
+      #   r.sleep() # Sleep for 1/R --> 1/5 --> T = 0.2  --> 10 * 0.2 = 2 secs 
+      #   # 2 secs * turn_speed = result --> 2secs * 45 = 90
 
-
-      #while not self.is_facing_goal():
-      #  self.turn()
+    # Turn the robot facing the goal
+    # Iterative approach. No so accurate
+    def head_toward_goal_i(self):
+      while not self.is_facing_goal():
+        self.turn(5)
 
     def turn_on_obstacle(self):
       rospy.loginfo('Starting turn_on_obstacle')
@@ -121,7 +124,6 @@ class Driver:
       # publish the command
       self.cmd_vel.publish(twist_forward)
 
-    # If turn_speed is to high we may detect a NaN as a near obstacle when there is a far distance
     def turn(self, turn_speed = 45):
       # rospy.loginfo('Turning robot, Speed: {0}'.format(turn_speed))
       twist_turn = Twist()
@@ -129,6 +131,16 @@ class Driver:
       twist_turn.angular.z = radians(turn_speed)
       # publish the command
       self.cmd_vel.publish(twist_turn)
+
+    def turn_degrees(self, degrees, turn_speed=45):
+      r = rospy.Rate(self.rate)
+      total_time = degrees/turn_speed
+      time_per_cicle = 1/float(self.rate)
+      iterations = int(total_time/time_per_cicle)
+
+      for i in range(0, iterations):
+        self.turn(turn_speed)
+        r.sleep()
 
     # Return true if the robot has reached the goal with the given accepted error. False otherwise.
     def is_goal(self, accepted_error = 0.5):
