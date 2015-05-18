@@ -16,7 +16,7 @@ from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 
 # We use a hyperbolic tangent as a transfer function
-from math import tanh, radians
+from math import tanh, radians, degrees
 import math
 
 class Driver:
@@ -59,12 +59,8 @@ class Driver:
 
     # Turn the robot facing the goal
     def head_toward_goal(self):
-      self.turn_degrees(180)
-      # r = rospy.Rate(self.rate)
-      # for x in range(0,10): # 10 => 90 degrees
-      #   self.turn()
-      #   r.sleep() # Sleep for 1/R --> 1/5 --> T = 0.2  --> 10 * 0.2 = 2 secs 
-      #   # 2 secs * turn_speed = result --> 2secs * 45 = 90
+      self.turn_degrees(self.degrees_to_goal())
+      # self.turn_degrees(180)
 
     # Turn the robot facing the goal
     # Iterative approach. No so accurate
@@ -125,43 +121,52 @@ class Driver:
       self.cmd_vel.publish(twist_forward)
 
     def turn(self, turn_speed = 45):
-      # rospy.loginfo('Turning robot, Speed: {0}'.format(turn_speed))
+      # rospy.loginfo('Turning robot, Speed: {0} degrees/sec'.format(turn_speed))
       twist_turn = Twist()
-      # let's go forward at 5 degrees/sec
+      # let's go forward at turn_speed degrees/sec
       twist_turn.angular.z = radians(turn_speed)
       # publish the command
       self.cmd_vel.publish(twist_turn)
 
-    def turn_degrees(self, degrees, turn_speed=45):
+    def turn_degrees(self, degrees, iterations = 10):
       r = rospy.Rate(self.rate)
-      total_time = degrees/turn_speed
       time_per_cicle = 1/float(self.rate)
-      iterations = int(total_time/time_per_cicle)
+      total_time = iterations * time_per_cicle
+      turn_speed = degrees/total_time
 
       for i in range(0, iterations):
         self.turn(turn_speed)
         r.sleep()
 
-    # Return true if the robot has reached the goal with the given accepted error. False otherwise.
-    def is_goal(self, accepted_error = 0.5):
+    def distance_to_goal(self):
       distance = math.hypot(self.end_pose.position.x - self.current_pose.position.x, self.end_pose.position.y - self.current_pose.position.y)
       rospy.loginfo('Distance to goal: {0}'.format(distance))
-      return (distance < accepted_error)
+      return distance;
 
-    def is_facing_goal(self, accepted_error = 0.005):
+    # Return true if the robot has reached the goal with the given accepted error. False otherwise.
+    def is_goal(self, accepted_error = 0.5):
+      return (self.distance_to_goal() < accepted_error);
+
+    def degrees_to_goal(self):
       deltaX = self.end_pose.position.x - self.current_pose.position.x
       deltaY = self.end_pose.position.y - self.current_pose.position.y
 
       # TODO revisar angulos negativos --> Valores absolutos
       # Ahora lo hace todo bien pero a veces da mas vueltas de las necesarias.
       desired_angle_radians = math.atan2(deltaY, deltaX)
-      current_angle_radians = self.current_pose.orientation.z * math.pi
+      current_angle_radians = self.current_pose.orientation.z * math.pi ## REVISAR ZZZZZZZZZZZ
 
       distance_radians = (desired_angle_radians) - (current_angle_radians)
-      rospy.loginfo('Desired = {0}, current = {1}, distance = {2}'.format(desired_angle_radians, current_angle_radians, distance_radians))
-      # rospy.loginfo('Distance to angle = {0}'.format(distance_radians))
+      distance_degrees = degrees(distance_radians)
 
-      return math.fabs(distance_radians) < accepted_error
+      rospy.loginfo('Degrees to face goal = {0}'.format(distance_degrees))
+      rospy.loginfo('Odometry data: {0}'.format(self.current_pose))
+      rospy.loginfo('deltaX: {0} DeltaY: {1}'.format(deltaX, deltaY))
+
+      return distance_degrees; 
+
+    def is_facing_goal(self, accepted_error = 0.05):
+      return math.fabs(self.degrees_to_goal()) < accepted_error
 
     def stop(self):
       rospy.loginfo('Stopping TurtleBot')
