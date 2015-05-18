@@ -16,11 +16,11 @@ from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 
 # We use a hyperbolic tangent as a transfer function
-from math import tanh
+from math import tanh, radians
 import math
 
 class Driver:
-    def __init__(self, end_pose, rate= 50):
+    def __init__(self, end_pose, rate=5):
       self.current_pose = Pose()
       self.end_pose = end_pose
       self.rate = rate
@@ -59,8 +59,15 @@ class Driver:
 
     # Turn the robot facing the goal
     def head_toward_goal(self):
-      while not self.is_facing_goal():
+      r = rospy.Rate(self.rate)
+      for x in range(0,10): # 10 => 90 degrees
         self.turn()
+        r.sleep() # Sleep for 1/R --> 1/5 --> T = 0.2  --> 10 * 0.2 = 2 secs 
+        # 2 secs * turn_speed = result --> 2secs * 45 = 90
+
+
+      #while not self.is_facing_goal():
+      #  self.turn()
 
     def turn_on_obstacle(self):
       rospy.loginfo('Starting turn_on_obstacle')
@@ -77,8 +84,8 @@ class Driver:
     def go_no_obstacle(self):
       rospy.loginfo('Starting go_no_obstacle')
       r = rospy.Rate(self.rate)
+      self.head_toward_goal()
       while not self.is_goal():
-        self.head_toward_goal()
         self.go_forward()
         r.sleep()
       rospy.loginfo('Stopping go_no_obstacle')
@@ -115,11 +122,11 @@ class Driver:
       self.cmd_vel.publish(twist_forward)
 
     # If turn_speed is to high we may detect a NaN as a near obstacle when there is a far distance
-    def turn(self, turn_speed = 0.1):
+    def turn(self, turn_speed = 45):
       # rospy.loginfo('Turning robot, Speed: {0}'.format(turn_speed))
       twist_turn = Twist()
-      # let's go forward at 0.2 m/s
-      twist_turn.angular.z = turn_speed
+      # let's go forward at 5 degrees/sec
+      twist_turn.angular.z = radians(turn_speed)
       # publish the command
       self.cmd_vel.publish(twist_turn)
 
@@ -139,8 +146,8 @@ class Driver:
       current_angle_radians = self.current_pose.orientation.z * math.pi
 
       distance_radians = (desired_angle_radians) - (current_angle_radians)
-      # rospy.loginfo('Desired = {0}, current = {1}, distance = {2}'.format(desired_angle_radians, current_angle_radians, distance_radians))
-      rospy.loginfo('Distance to angle = {0}'.format(distance_radians))
+      rospy.loginfo('Desired = {0}, current = {1}, distance = {2}'.format(desired_angle_radians, current_angle_radians, distance_radians))
+      # rospy.loginfo('Distance to angle = {0}'.format(distance_radians))
 
       return math.fabs(distance_radians) < accepted_error
 
