@@ -25,8 +25,8 @@ if __name__ == '__main__':
     # driver.turn_on_obstacle()
     # driver.bug_0()
     # driver.go_no_obstacle()
-    driver.go_forward_distance(2)
-    # driver.head_toward_goal()
+    # driver.go_forward_distance(1)
+    driver.head_toward_goal()
     # driver.degrees_to_goal()
     # Hand control over to ROS
     # This function will only exit when the user press Ctrl + C
