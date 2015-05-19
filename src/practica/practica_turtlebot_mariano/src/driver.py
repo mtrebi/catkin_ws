@@ -60,6 +60,7 @@ class Driver:
     # Turn the robot facing the goal
     def head_toward_goal(self):
       self.turn_degrees(self.degrees_to_goal())
+
       # self.turn_degrees(180)
 
     # Turn the robot facing the goal
@@ -129,6 +130,7 @@ class Driver:
       self.cmd_vel.publish(twist_turn)
 
     def turn_degrees(self, degrees, iterations = 10):
+      rospy.loginfo('Turning robot, Degrees: {0} '.format(degrees))
       r = rospy.Rate(self.rate)
       time_per_cicle = 1/float(self.rate)
       total_time = iterations * time_per_cicle
@@ -137,6 +139,10 @@ class Driver:
       for i in range(0, iterations):
         self.turn(turn_speed)
         r.sleep()
+        
+      self.turn(0)
+      time.sleep(1.25)
+
 
     def distance_to_goal(self):
       distance = math.hypot(self.end_pose.position.x - self.current_pose.position.x, self.end_pose.position.y - self.current_pose.position.y)
@@ -159,9 +165,9 @@ class Driver:
       distance_radians = (desired_angle_radians) - (current_angle_radians)
       distance_degrees = degrees(distance_radians)
 
-      rospy.loginfo('Degrees to face goal = {0}'.format(distance_degrees))
-      rospy.loginfo('Odometry data: {0}'.format(self.current_pose))
-      rospy.loginfo('deltaX: {0} DeltaY: {1}'.format(deltaX, deltaY))
+      #rospy.loginfo('Degrees to face goal = {0}'.format(distance_degrees))
+      #rospy.loginfo('Odometry data: {0}'.format(self.current_pose))
+      #rospy.loginfo('deltaX: {0} DeltaY: {1}'.format(deltaX, deltaY))
 
       return distance_degrees; 
 
