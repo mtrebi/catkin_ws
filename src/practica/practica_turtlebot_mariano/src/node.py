@@ -24,7 +24,8 @@ if __name__ == '__main__':
     # driver.stop_on_obstacle()
     # driver.turn_on_obstacle()
     # driver.bug_0()
-    driver.go_no_obstacle()
+    # driver.go_no_obstacle()
+    driver.go_forward_distance(2)
     # driver.head_toward_goal()
     # driver.degrees_to_goal()
     # Hand control over to ROS

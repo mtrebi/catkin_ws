@@ -121,6 +121,21 @@ class Driver:
       # publish the command
       self.cmd_vel.publish(twist_forward)
 
+    # Move the robot in the forward direction
+    def go_forward_distance(self, distance, iterations = 10):
+      rospy.loginfo('Moving forward, Distance: {0} '.format(distance))
+      r = rospy.Rate(self.rate)
+      time_per_cicle = 1/float(self.rate)
+      total_time = iterations * time_per_cicle
+      forward_speed = distance/total_time
+
+      for i in range(0, iterations):
+        self.go_forward(forward_speed)
+        r.sleep()
+
+      self.go_forward(0)
+      time.sleep(1.25)
+
     def turn(self, turn_speed = 45):
       # rospy.loginfo('Turning robot, Speed: {0} degrees/sec'.format(turn_speed))
       twist_turn = Twist()
@@ -139,7 +154,7 @@ class Driver:
       for i in range(0, iterations):
         self.turn(turn_speed)
         r.sleep()
-        
+
       self.turn(0)
       time.sleep(1.25)
 
