@@ -85,15 +85,15 @@ class Driver:
         r.sleep()
       rospy.loginfo('Stopping bug_0 algorithm')
 
-    # Turn the robot facing the goal
+    # Turn the robot facing the goal --> TODO SHORTEST TURN!!!
     def head_toward_goal(self):
       self.turn_degrees(self.degrees_to_goal())
 
       # self.turn_degrees(180)
 
     # Turn the robot facing the goal
-    # Iterative approach. No so accurate
-    def head_toward_goal_odom(self):
+    # Iterative approach. No so accurate --> TODO SHORTEST TURN!!!
+    def head_toward_goal_odom(self): 
       while not self.is_facing_goal():
         self.turn(5)
 
@@ -115,7 +115,6 @@ class Driver:
       self.head_toward_goal()
       while not self.is_goal():
         self.go_forward()
-        self.head_toward_goal()
         r.sleep()
       rospy.loginfo('Stopping go_no_obstacle')
       self.stop()
@@ -126,6 +125,7 @@ class Driver:
       self.head_toward_goal()
       while not self.is_goal():
         self.go_forward_distance(1)
+        self.correct_orientation()
         r.sleep()
       rospy.loginfo('Stopping go_no_obstacle')
       self.stop()
@@ -151,6 +151,11 @@ class Driver:
       # rospy.loginfo('Current linear speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.linear.x, odom.twist.twist.linear.y, odom.twist.twist.linear.z)) 
       # rospy.loginfo('Current angular speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.angular.x, odom.twist.twist.angular.y, odom.twist.twist.angular.z)) 
 
+    def correct_orientation(self, accepted_error = 0.5):
+      if not self.is_facing_goal(accepted_error):
+        rospy.loginfo('Correcting TurtleBot orientation') 
+        self.head_toward_goal()
+
     # Move the robot in the forward direction
     def go_forward(self, speed = 5):
       # rospy.loginfo('Moving forward, Speed: {0}'.format(speed))
@@ -172,7 +177,7 @@ class Driver:
         self.go_forward(forward_speed)
         r.sleep()
 
-      self.go_forward(0)
+      self.go_forward()
       time.sleep(1.25)
 
     def turn(self, turn_speed = 45):
