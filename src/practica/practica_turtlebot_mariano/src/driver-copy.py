@@ -5,10 +5,9 @@
 import roslib; roslib.load_manifest('practica_turtlebot')
 import rospy
 import time
-import numpy as np
 
 # The velocity command message
-from geometry_msgs.msg import Vector3, Twist, Quaternion, Pose, Point
+from geometry_msgs.msg import Vector3, Twist, Quaternion, Pose
 
 # The laser scan message
 from sensor_msgs.msg import LaserScan
@@ -19,19 +18,6 @@ from nav_msgs.msg import Odometry
 # We use a hyperbolic tangent as a transfer function
 from math import tanh, radians, degrees
 import math
-import tf
-
-def angle_wrap(a):
-    '''
-    Returns the angle a normalized between -pi and pi.
-    Works with numbers and numpy arrays.
-    '''
-    a = a % (2 * np.pi)
-    if (isinstance(a, int) or isinstance(a, float)) and (a > np.pi):
-        a -= 2 * np.pi
-    elif isinstance(a, np.ndarray): # arrays
-        a[a > np.pi] -= 2 * np.pi
-    return a
 
 class Driver:
     def __init__(self, end_pose, rate=5):
@@ -58,7 +44,6 @@ class Driver:
 
       time.sleep(1)
 
-
     def bug_0(self, turn_orientation = 'Left', accepted_error = 1):
       rospy.loginfo('Starting bug_0 algorithm')
       r = rospy.Rate(self.rate)
@@ -66,19 +51,6 @@ class Driver:
       while not self.is_goal():
         if not self.is_obstacle():
           self.go_forward()
-          self.head_toward_goal()
-        else:
-          self.turn_degrees(5)
-        r.sleep()
-      rospy.loginfo('Stopping bug_0 algorithm')
-
-    def bug_0_odom(self, turn_orientation = 'Left', accepted_error = 1):
-      rospy.loginfo('Starting bug_0 algorithm')
-      r = rospy.Rate(self.rate)
-      self.head_toward_goal()
-      while not self.is_goal():
-        if not self.is_obstacle():
-          self.go_forward_distance(1)
           self.head_toward_goal()
         else:
           self.turn()
@@ -93,7 +65,7 @@ class Driver:
 
     # Turn the robot facing the goal
     # Iterative approach. No so accurate
-    def head_toward_goal_odom(self):
+    def head_toward_goal_i(self):
       while not self.is_facing_goal():
         self.turn(5)
 
@@ -109,23 +81,12 @@ class Driver:
       rospy.loginfo('Stopping turn_on_obstacle')
       self.stop()
 
-    def go_no_obstacle_odom(self):
-      rospy.loginfo('Starting go_no_obstacle')
-      r = rospy.Rate(self.rate)
-      self.head_toward_goal()
-      while not self.is_goal():
-        self.go_forward()
-        self.head_toward_goal()
-        r.sleep()
-      rospy.loginfo('Stopping go_no_obstacle')
-      self.stop()
-
     def go_no_obstacle(self):
       rospy.loginfo('Starting go_no_obstacle')
       r = rospy.Rate(self.rate)
       self.head_toward_goal()
       while not self.is_goal():
-        self.go_forward_distance(1)
+        self.go_forward()
         r.sleep()
       rospy.loginfo('Stopping go_no_obstacle')
       self.stop()
@@ -146,8 +107,8 @@ class Driver:
       # rospy.loginfo('Odometry data: {0}'.format(odom))
       # Read odometry params
       # rospy.loginfo('Odometry data:')
-      rospy.loginfo('Current position: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.position.x, odom.pose.pose.position.y, odom.pose.pose.position.z)) 
-      # rospy.loginfo('Current orientation: x = {0}, y = {1}, z = {2}, w = {3}'.format(odom.pose.pose.orientation.x, odom.pose.pose.orientation.y, odom.pose.pose.orientation.z, odom.pose.pose.orientation.w)) 
+      # rospy.loginfo('Current position: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.position.x, odom.pose.pose.position.y, odom.pose.pose.position.z)) 
+      rospy.loginfo('Current orientation: x = {0}, y = {1}, z = {2}'.format(odom.pose.pose.orientation.x, odom.pose.pose.orientation.y, odom.pose.pose.orientation.z)) 
       # rospy.loginfo('Current linear speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.linear.x, odom.twist.twist.linear.y, odom.twist.twist.linear.z)) 
       # rospy.loginfo('Current angular speed: x = {0}, y = {1}, z = {2}'.format(odom.twist.twist.angular.x, odom.twist.twist.angular.y, odom.twist.twist.angular.z)) 
 
@@ -161,7 +122,7 @@ class Driver:
       self.cmd_vel.publish(twist_forward)
 
     # Move the robot in the forward direction
-    def go_forward_distance(self, distance, iterations = 25):
+    def go_forward_distance(self, distance, iterations = 10):
       rospy.loginfo('Moving forward, Distance: {0} '.format(distance))
       r = rospy.Rate(self.rate)
       time_per_cicle = 1/float(self.rate)
@@ -183,7 +144,7 @@ class Driver:
       # publish the command
       self.cmd_vel.publish(twist_turn)
 
-    def turn_degrees(self, degrees, iterations = 25):
+    def turn_degrees(self, degrees, iterations = 10):
       rospy.loginfo('Turning robot, Degrees: {0} '.format(degrees))
       r = rospy.Rate(self.rate)
       time_per_cicle = 1/float(self.rate)
@@ -207,7 +168,7 @@ class Driver:
     def is_goal(self, accepted_error = 0.5):
       return (self.distance_to_goal() < accepted_error);
 
-    def degrees_to_goal_odom(self):
+    def degrees_to_goal(self):
       deltaX = self.end_pose.position.x - self.current_pose.position.x
       deltaY = self.end_pose.position.y - self.current_pose.position.y
 
@@ -223,27 +184,7 @@ class Driver:
       #rospy.loginfo('Odometry data: {0}'.format(self.current_pose))
       #rospy.loginfo('deltaX: {0} DeltaY: {1}'.format(deltaX, deltaY))
 
-      return distance_degrees;
-
-    def degrees_to_goal(self):
-      # Desired angle
-      deltaX = self.end_pose.position.x - self.current_pose.position.x
-      deltaY = self.end_pose.position.y - self.current_pose.position.y
-
-      desired_angle_radians = math.atan2(deltaY, deltaX)
-
-      # Current angle
-      current_quat = self.current_pose.orientation
-      current_euler = tf.transformations.euler_from_quaternion([current_quat.x,current_quat.y,current_quat.z,current_quat.w])
-      current_position_theta = current_euler[2]
-
-      distance_radians = angle_wrap((desired_angle_radians) - (current_position_theta))
-      distance_degrees = degrees(distance_radians)
-
-      rospy.loginfo('Degrees to face goal theta = {0}'.format(distance_degrees))
-      # rospy.loginfo('Degrees to face goal = {0}'.format(self.degrees_to_goal_odom()))
-
-      return distance_degrees;   
+      return distance_degrees; 
 
     def is_facing_goal(self, accepted_error = 0.05):
       return math.fabs(self.degrees_to_goal()) < accepted_error
