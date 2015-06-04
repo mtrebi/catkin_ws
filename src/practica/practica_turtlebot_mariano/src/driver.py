@@ -103,7 +103,7 @@ class Driver:
       self.obstacle = self.obstacle_threshold >= closest or (math.isnan(closest) and self.obstacle)
 
     def odometry_callback(self, odom):
-      self.current_pose = odom.pose.posee
+      self.current_pose = odom.pose.pose
       # rospy.loginfo('Odometry data: {0}'.format(odom))
       # Read odometry params
       # rospy.loginfo('Odometry data:')
