@@ -39,7 +39,7 @@ class Driver:
       self.end_pose = end_pose
       self.rate = rate
       self.obstacle = False
-      self.obstacle_threshold = 1
+      self.obstacle_threshold = 1.5
 
       # Subscriber for the encoder data
       # When data of type LaserScal arrives from topic 'scan' call laser_callback function immediately
@@ -72,7 +72,7 @@ class Driver:
           while self.is_obstacle():
             self.turn()
             r.sleep()
-          self.go_forward_distance(1)
+          self.go_forward_distance(0.75)
         r.sleep()
       rospy.loginfo('Current position: x = {0}, y = {1}, z = {2}'.format(self.current_pose.position.x, self.current_pose.position.y, self.current_pose.position.z)) 
       rospy.loginfo('Stopping bug_0 algorithm')
@@ -122,7 +122,7 @@ class Driver:
     ##################### SPEED #####################
 
     def compute_linear_speed(self, max_linear_speed = 10):
-      return (self.distance_to_goal()/max_linear_speed)
+      return (self.distance_to_goal()/max_linear_speed) + 0.1
 
 
     def compute_angular_speed(self, max_angular_speed = 180):
@@ -149,7 +149,7 @@ class Driver:
         r.sleep()
 
       self.turn(0)
-      time.sleep(1.25)
+      #time.sleep(1.25)
 
     ##################### MOVEMENT #####################
 
@@ -233,7 +233,7 @@ class Driver:
     # Laser returns NaN if objects is too far or too near. We must take care!
     def laser_callback(self, scan):
       closest = min(scan.ranges)
-      self.obstacle = self.obstacle_threshold >= closest #or (math.isnan(closest) and self.obstacle)
+      self.obstacle = (self.obstacle_threshold >= closest) # or (math.isnan(closest) and self.obstacle)
 
     def odometry_callback(self, odom):
       self.current_pose = odom.pose.pose
