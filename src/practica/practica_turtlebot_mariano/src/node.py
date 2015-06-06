@@ -15,7 +15,7 @@ if __name__ == '__main__':
     # Create end_pose
     end_pose = Pose()
     end_pose.position.x = 0
-    end_pose.position.y = 3
+    end_pose.position.y = 5
 
     # Create driver
     driver = Driver(end_pose)
@@ -24,9 +24,12 @@ if __name__ == '__main__':
     # driver.stop_on_obstacle()
     # driver.turn_on_obstacle()
     # driver.bug_0()
-    # driver.go_no_obstacle()
-    # driver.go_forward_distance(1)
-    driver.head_toward_goal()
+    #driver.head_toward_goal_odom()
+    #driver.go_forward_distance(4)
+    driver.bug_0()
+    #driver.head_toward_goal()
+    # driver.degrees_to_goal()
+    # driver.turn_degrees(45)
     # driver.degrees_to_goal()
     # Hand control over to ROS
     # This function will only exit when the user press Ctrl + C
