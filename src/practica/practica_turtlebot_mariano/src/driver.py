@@ -60,18 +60,38 @@ class Driver:
 
     ##################### NAVIGATION #####################
 
-    def bug_0(self, turn_orientation = 'Left', accepted_error = 1):
+    def bug_0(self, accepted_error = 0.1):
       rospy.loginfo('Starting bug_0 algorithm')
       r = rospy.Rate(self.rate)
       self.head_toward_goal()
-      while not self.is_goal():
+      while not self.is_goal(accepted_error):
         if not self.is_obstacle():
-          self.go_forward()
-          self.head_toward_goal()
-        else:
-          self.turn_degrees(5)
+          self.go_forward(self.compute_linear_speed())
+          self.correct_orientation()
+        else:# TODO ESTE ELSE!!!
+          while self.is_obstacle():
+            self.turn()
+            r.sleep()
+          self.go_forward_distance(1)
         r.sleep()
+      rospy.loginfo('Current position: x = {0}, y = {1}, z = {2}'.format(self.current_pose.position.x, self.current_pose.position.y, self.current_pose.position.z)) 
       rospy.loginfo('Stopping bug_0 algorithm')
+
+    # def bug_0(self, accepted_error = 0.1):
+    #   rospy.loginfo('Starting bug_0 algorithm')
+    #   r = rospy.Rate(self.rate)
+    #   self.head_toward_goal()
+    #   while not self.is_goal(accepted_error):
+    #     while self.is_obstacle():
+    #       self.turn()
+        
+    #     if not self.is_obstacle():
+    #       self.go_forward(self.compute_linear_speed())
+    #       self.correct_orientation()
+    #     else:
+    #       self.turn_degrees(5)
+    #     r.sleep()
+    #   rospy.loginfo('Stopping bug_0 algorithm')
 
     def go_no_obstacle(self):
       rospy.loginfo('Starting go_no_obstacle')
@@ -142,6 +162,21 @@ class Driver:
       # publish the command
       self.cmd_vel.publish(twist_forward)
 
+    # Move the robot in the forward direction
+    def go_forward_distance(self, distance, iterations = 10):
+      rospy.loginfo('Moving forward, Distance: {0} '.format(distance))
+      r = rospy.Rate(self.rate)
+      time_per_cicle = 1/float(self.rate)
+      total_time = iterations * time_per_cicle
+      forward_speed = distance/total_time
+
+      for i in range(0, iterations):
+        self.go_forward(forward_speed)
+        r.sleep()
+
+      self.go_forward(0)
+      time.sleep(1.25)
+
     ##################### OBJECTIVE #####################
 
     def distance_to_goal(self):
@@ -198,7 +233,7 @@ class Driver:
     # Laser returns NaN if objects is too far or too near. We must take care!
     def laser_callback(self, scan):
       closest = min(scan.ranges)
-      self.obstacle = self.obstacle_threshold >= closest or (math.isnan(closest) and self.obstacle)
+      self.obstacle = self.obstacle_threshold >= closest #or (math.isnan(closest) and self.obstacle)
 
     def odometry_callback(self, odom):
       self.current_pose = odom.pose.pose

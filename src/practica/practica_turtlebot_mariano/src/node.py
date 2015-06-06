@@ -14,8 +14,8 @@ if __name__ == '__main__':
 
     # Create end_pose
     end_pose = Pose()
-    end_pose.position.x = 3
-    end_pose.position.y = 0
+    end_pose.position.x = 0
+    end_pose.position.y = 5
 
     # Create driver
     driver = Driver(end_pose)
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # driver.bug_0()
     #driver.head_toward_goal_odom()
     #driver.go_forward_distance(4)
-    driver.go_no_obstacle()
+    driver.bug_0()
     #driver.head_toward_goal()
     # driver.degrees_to_goal()
     # driver.turn_degrees(45)
