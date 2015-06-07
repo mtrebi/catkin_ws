@@ -4,21 +4,22 @@
 import roslib; roslib.load_manifest('practica_turtlebot')
 import rospy
 
-from driver import driver
+from driver import Driver
+from geometry_msgs.msg import Pose
 
 if __name__ == '__main__':
-    try:
-        rospy.init_node('driver')
+  try:
+    # Starts a unique node with name driver
+    rospy.init_node('driver')
 
-        # Get the distance from the parameter server.  Default is 0.5
-        distance = rospy.get_param('distance', 0.5)
 
-        # Set up the controller
-        stopper = driver(distance)
 
-        # Hand control over to ROS
-        rospy.spin() 
+    driver = Driver()
 
-            
-    except rospy.ROSInterruptException:
-        pass
+    #bucle principal del programa cada 0.03 segons mira si ha rebut missatges.
+    while not rospy.is_shutdown() and not driver.status==5:
+        driver.bug0()
+        rospy.sleep(0.03)     
+
+  except rospy.ROSInterruptException:
+    pass

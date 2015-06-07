@@ -11,3 +11,5 @@ roslaunch turtlebot_rviz_launchers view_robot.launch
 
 roslaunch practica_turtlebot bug0.launch sim:=true distance:=6
 
+roslaunch practica_turtlebot bug0.launch x:=15 y:=22 sim:=true
+
