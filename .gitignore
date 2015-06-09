@@ -2,5 +2,5 @@ build/
 devel/
 .catkin_workspace
 .gitignore~
-*.*~
+**~
 **.pyc
