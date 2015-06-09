@@ -141,6 +141,7 @@ class Driver(object):
     # Move the robot in the forward direction adding le current position the definet final_point to avoid obstable
     def go_forward_X_distance(self):
       distance = math.hypot(self.final_point.x - self.current_pose.position.x, self.final_point.y - self.current_pose.position.y)
+        #com que no estem del tot alienats hem de posar un treshold bastant gros perque arribi a l'objectiu
       if (distance> self.accepted_error_try_avoid_obstable):
           twist_forward = Twist()
           # let's go forward at speed m/s
