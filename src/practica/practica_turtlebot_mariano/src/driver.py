@@ -217,11 +217,11 @@ class Driver(object):
 
     # Laser returns NaN if objects is too far or too near. We must take care!
     def laser_callback(self, scan):
-      closest = min(scan.ranges)
-      print "Real closest range is:", closest
-      if np.isnan(closest):
+      closest = np.nanmin(scan.ranges)
+      rospy.loginfo('Closest range is: {0}'.format(closest))
+      if np.isnan(closest): # All values returned by scan.ranges are NANs
         closest=999 #when closest is nan = very fast,  is not possible too near because the robot turn before
-      print "Closest range is:", closest
+      rospy.loginfo('REAL Closest range is: {0}'.format(closest))
 
       self.obstacle = self.obstacle_threshold >= closest
 
