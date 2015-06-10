@@ -161,6 +161,7 @@ class Driver(object):
         else:
             print "Finished"
             self.status=5 #Finished
+            self.shutdown()
     
     def distance_to_goal(self):
       distance = math.hypot(self.end_pose.position.x - self.current_pose.position.x, self.end_pose.position.y - self.current_pose.position.y)
