@@ -69,7 +69,8 @@ class Driver(object):
 
         #######GO FOWARD######### 
         #this linear variable * distance to goal lets to make a variable velocity
-        self.linear_constant=0.5
+        #0.5
+        self.linear_constant=5
         #max speed of the robot, if is very high is possible that the robot don't have enought time for stop whith obstabce
         self.max_speed=0.25
 
@@ -82,9 +83,11 @@ class Driver(object):
 
         ####### head_toward_goal #########  
         #this linear velocity variable * distance to goal lets to make a variable linear velocity
-        self.head_toward_linear_constant=0.1
+        #0.1
+        self.head_toward_linear_constant=1
         #this angular velocity variable * distance to goal lets to make a variable angular velocity
-        self.head_toward_angular_constant=0.2
+        #0.2
+        self.head_toward_angular_constant=2
 
 
 
@@ -197,7 +200,7 @@ class Driver(object):
         twist_turn = Twist()
         # let's go forward at speed m/s
 
-        #si estem molt mal posats la divisio sera molt alta i anira amb velocitat linieal lenta i rectificara l0angle, si no comencaria a donar voltes
+        #si estem molt mal posats la divisio sera molt alta i anira amb velocitat linieal lenta i rectificara l0angle, si no comencaria a donar voltes,
         twist_turn.linear.x = min(self.distance_to_goal()*self.head_toward_linear_constant/abs(self.degrees_to_goal()), self.max_speed)
         rospy.loginfo('Moving forward, Speed: {0}'.format(twist_turn.linear.x))
         # let's go forward at turn_speed degrees/sec
@@ -212,11 +215,27 @@ class Driver(object):
 
     # Laser returns NaN if objects is too far or too near. We must take care!
     def laser_callback(self, scan):
-      closest = min(scan.ranges)
-      print "Real closest range is:", closest
-      if np.isnan(closest):
-        closest=999 #when closest is nan = very fast,  is not possible too near because the robot turn before
-      print "Closest range is:", closest
+
+      # we will change the nan of tupla to 999
+      tupla= scan.ranges
+      items = list(tupla)
+      for index, item in enumerate(items):
+        if np.isnan(item):
+            items[index]= 999
+      #creathe the tuple
+      t = tuple(items)
+
+   
+      
+      #old metoth of  selection min of tuple
+      closestOLD  = min(scan.ranges)
+      print "Old metoth  closest range is:", closestOLD
+      if np.isnan(closestOLD):
+        closestOLD=999 #when closest is nan = very fast,  is not possible too near because the robot turn before
+      
+      #new metorh of select tuple
+      closest= min(t) 
+      print "Used Closest range is:", closest
 
       self.obstacle = self.obstacle_threshold >= closest
 

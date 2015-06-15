@@ -8,4 +8,7 @@
   <param name="x" value="$(arg x)"/>
   <param name="y" value="$(arg y)"/>
 
+  <!-- Turtlebot Driver node -->
+  <node pkg="practica_turtlebot" type="node.py" name="driver" output="screen"/>
+
 </launch>
