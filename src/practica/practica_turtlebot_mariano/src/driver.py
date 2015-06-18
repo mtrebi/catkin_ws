@@ -63,9 +63,9 @@ class Driver(object):
         #distance (m) detection of obstacte when the robot stop and begin to turn 
         self.obstacle_threshold = 1
         #distance (m) obstacle_threshold+obstacle_threshold_add when the robot detects that the robot i more far starts to go fowrward to avoid it
-        self.obstacle_threshold_add = 0.25
+        self.obstacle_threshold_add = 0.35
         #distance (m) in status 2 that the robot move to try avoid the obstracle and go to the goal after turn in front of obstracle
-        self.distance_try_avoid_obstacle = 0.4
+        self.distance_try_avoid_obstacle = 0.6
 
         #######GO FOWARD######### 
         #this linear variable * distance to goal lets to make a variable velocity

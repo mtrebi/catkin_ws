@@ -2,7 +2,7 @@
 
 
 # Every python controller needs these lines
-import roslib; roslib.load_manifest('practica_turtlebot')
+import roslib; roslib.load_manifest('practica_turtlebot_mariano')
 import rospy
 import time
 import math
@@ -69,10 +69,9 @@ class Driver(object):
 
         #######GO FOWARD######### 
         #this linear variable * distance to goal lets to make a variable velocity
-        #0.5
-        self.linear_constant=5
-        #max speed of the robot, if is very high is possible that the robot don't have enought time for stop whith obstabce
-        self.max_speed=0.25
+        self.linear_constant=0.5
+        #max speed of the robot, if is very high is possible that the robot don't have enought time for stop whith obstabce 0.25
+        self.max_speed=0.5
 
         #######GO FOWARD DISTANCE######### 
         self.accepted_error_try_avoid_obstable = 0.1
@@ -83,10 +82,8 @@ class Driver(object):
 
         ####### head_toward_goal #########  
         #this linear velocity variable * distance to goal lets to make a variable linear velocity
-        #0.1
         self.head_toward_linear_constant=1
         #this angular velocity variable * distance to goal lets to make a variable angular velocity
-        #0.2
         self.head_toward_angular_constant=2
 
 
@@ -164,6 +161,7 @@ class Driver(object):
         else:
             print "Finished"
             self.status=5 #Finished
+            self.shutdown()
     
     def distance_to_goal(self):
       distance = math.hypot(self.end_pose.position.x - self.current_pose.position.x, self.end_pose.position.y - self.current_pose.position.y)
@@ -199,9 +197,14 @@ class Driver(object):
     def head_toward_goal(self):
         twist_turn = Twist()
         # let's go forward at speed m/s
+        
+        #si estem molt mal posats la divisio sera molt alta i anira amb velocitat linieal lenta i rectificara l0angle, si no comencaria a donar voltes
+        degrees_to_goal = self.degrees_to_goal()
+        if degrees_to_goal:
+          twist_turn.linear.x = min(self.distance_to_goal()*self.head_toward_linear_constant/abs(self.degrees_to_goal()), self.max_speed)
+        else:
+          twist_turn.linear.x = self.max_speed
 
-        #si estem molt mal posats la divisio sera molt alta i anira amb velocitat linieal lenta i rectificara l0angle, si no comencaria a donar voltes,
-        twist_turn.linear.x = min(self.distance_to_goal()*self.head_toward_linear_constant/abs(self.degrees_to_goal()), self.max_speed)
         rospy.loginfo('Moving forward, Speed: {0}'.format(twist_turn.linear.x))
         # let's go forward at turn_speed degrees/sec
 
@@ -215,27 +218,11 @@ class Driver(object):
 
     # Laser returns NaN if objects is too far or too near. We must take care!
     def laser_callback(self, scan):
-
-      # we will change the nan of tupla to 999
-      tupla= scan.ranges
-      items = list(tupla)
-      for index, item in enumerate(items):
-        if np.isnan(item):
-            items[index]= 999
-      #creathe the tuple
-      t = tuple(items)
-
-   
-      
-      #old metoth of  selection min of tuple
-      closestOLD  = min(scan.ranges)
-      print "Old metoth  closest range is:", closestOLD
-      if np.isnan(closestOLD):
-        closestOLD=999 #when closest is nan = very fast,  is not possible too near because the robot turn before
-      
-      #new metorh of select tuple
-      closest= min(t) 
-      print "Used Closest range is:", closest
+      closest = np.nanmin(scan.ranges)
+      rospy.loginfo('Closest range is: {0}'.format(closest))
+      if np.isnan(closest): # All values returned by scan.ranges are NANs
+        closest=999 #when closest is nan = very fast,  is not possible too near because the robot turn before
+      rospy.loginfo('REAL Closest range is: {0}'.format(closest))
 
       self.obstacle = self.obstacle_threshold >= closest
 
