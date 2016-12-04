@@ -43,7 +43,5 @@ this angular velocity variable * distance to goal lets to make a variable angula
 - self.head_toward_angular_constant=2
 
 #Videos
-![Turtlebo2 avoiding object](https://www.youtube.com/watch?v=7wiXgdLNfO0&list=PLeGS7otZ9mSc-kfSqJHZLcTUpjxLSWuh7)
-[Turtlebo2 avoiding object](https://www.youtube.com/watch?v=7wiXgdLNfO0&list=PLeGS7otZ9mSc-kfSqJHZLcTUpjxLSWuh7 "Turtlebo2 avoiding object")
 
-Checkout all the videos in my [youtube playlist](https://www.youtube.com/playlist?list=PLeGS7otZ9mSc-kfSqJHZLcTUpjxLSWuh7)
+[![Turtlebot avoiding bostacles](http://img.youtube.com/vi/7wiXgdLNfO0/0.jpg)](https://www.youtube.com/watch?v=7wiXgdLNfO0&list=PLeGS7otZ9mSc-kfSqJHZLcTUpjxLSWuh7&index=1 "Turtlebot avoiding bostacles")
