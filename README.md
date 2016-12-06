@@ -1,6 +1,9 @@
 # turtlebot
-Turtulebot repo. 
+## Demo
+Checkout the videos! (click on the image)
+[![Turtlebot avoiding bostacles](http://img.youtube.com/vi/7wiXgdLNfO0/0.jpg)](https://www.youtube.com/watch?v=7wiXgdLNfO0&list=PLeGS7otZ9mSc-kfSqJHZLcTUpjxLSWuh7&index=1 "Turtlebot avoiding bostacles")
 
+## Implementation
 Implementation of Bug0 navigation strategy with a Turtlebot.
 
 Bug0 Pseudocode:
@@ -42,6 +45,4 @@ this linear velocity variable * distance to goal lets to make a variable linear 
 this angular velocity variable * distance to goal lets to make a variable angular velocity
 - self.head_toward_angular_constant=2
 
-#Videos
 
-[![Turtlebot avoiding bostacles](http://img.youtube.com/vi/7wiXgdLNfO0/0.jpg)](https://www.youtube.com/watch?v=7wiXgdLNfO0&list=PLeGS7otZ9mSc-kfSqJHZLcTUpjxLSWuh7&index=1 "Turtlebot avoiding bostacles")
