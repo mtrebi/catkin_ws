@@ -1,6 +1,7 @@
 # turtlebot
 ## Demo
 Checkout the videos! (click on the image)
+
 [![Turtlebot avoiding bostacles](http://img.youtube.com/vi/7wiXgdLNfO0/0.jpg)](https://www.youtube.com/watch?v=7wiXgdLNfO0&list=PLeGS7otZ9mSc-kfSqJHZLcTUpjxLSWuh7&index=1 "Turtlebot avoiding bostacles")
 
 ## Implementation
